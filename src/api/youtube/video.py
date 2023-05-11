@@ -1,14 +1,14 @@
 from models import Video, VideoDetail
 from pyyoutube import Api, error
 from contextlib import suppress
+from api.youtube.config import TOKEN
 
 domain = "https://www.youtube.com/watch?v="
 
-api = Api(api_key="AIzaSyAWZTv1fuHrkE_vWsO3APLdgx6H-6bM_hA")
+api = Api(api_key=TOKEN)
 
 def get_list_of_video(query: str, count: int = 3) -> list[Video]:
     videos: list[Video] = []
-    # with suppress(IndexError, error.PyYouTubeException) as err:
     data = api.search_by_keywords(q=query, search_type=["video"], count=count, region_code="RU").to_dict()
     if not data["items"]: return []
     for item in data["items"]:

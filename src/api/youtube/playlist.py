@@ -1,11 +1,13 @@
 from models import PlayList, PlayListDetail, PlayListItem
 from pyyoutube import Api, error
 from contextlib import suppress
+from api.youtube.config import TOKEN
+
 
 
 domain = "https://www.youtube.com/playlist?list="
 
-api = Api(api_key="AIzaSyAWZTv1fuHrkE_vWsO3APLdgx6H-6bM_hA")
+api = Api(api_key=TOKEN)
 
 
 def get_list_of_playlist(query: str, count: int = 3) -> list[PlayList]:

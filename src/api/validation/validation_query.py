@@ -11,7 +11,15 @@ QueryTextValidation = Query(
 
 QueryCountValidation = Query(
     default=3, 
-    gt=2, 
-    le=10,
+    gt=0, 
+    le=5,
     description="Количество ожидаемых видео/плейлистов/книг",
+)
+
+QueryLanguageValidation = Query(
+    default="all",
+    min_length=2,
+    max_length=3,
+    description="На каком языке написана книга",
+    example="ru"
 )

@@ -1,0 +1,5 @@
+python-youtube
+fastapi[all]
+gunicorn
+wheel
+psycopg2-binary
