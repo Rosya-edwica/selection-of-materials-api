@@ -5,8 +5,6 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from api.routes.controller import router
 
-
-# TODO: Нужно добавить виртуальное окружение для апи ключей
 # TODO: Исправить проблему с ограничениями запросов в день
 
 app = FastAPI(
@@ -25,6 +23,10 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         case _: message = errors
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
-        content=jsonable_encoder({"message": message, "detail": errors, "docs": "Ссылка на документацию: http://127.0.0.1:8000/docs"}),
+        content=jsonable_encoder({
+            "message": message, 
+            "detail": errors, 
+            "docs": "Ссылка на документацию: http://api.edwica.ru/docs"
+            }),
     )
 
