@@ -2,16 +2,16 @@ from pydantic import BaseModel
 
 class Video(BaseModel):
     id: str
-    title: str
-    url: str
+    name: str
+    link: str
     
 
 class VideoDetail(BaseModel):
     id: str
-    title: str
+    name: str
     description: str
-    url: str
+    link: str
     published_at: str
     tags: list[str]
-    img: str
+    header_image: str
     views: int

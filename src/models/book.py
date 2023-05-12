@@ -2,13 +2,13 @@ from pydantic import BaseModel
 
 class Book(BaseModel):
     id: int
-    title: str
+    name: str
     description: str
-    image: str | None
-    url: str
+    header_image: str | None
+    link: str
     is_audio: bool
-    full_price: float | None
-    final_price: float | None
+    old_price: float | None
+    price: float | None
     currency: str | None
     min_age: int
     language: str

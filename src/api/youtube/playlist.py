@@ -17,8 +17,8 @@ def get_list_of_playlist(query: str, count: int = 3) -> list[PlayList]:
         for item in data["items"]:  
             playlists.append(PlayList(  
                 id=item["id"]["playlistId"],    
-                title=item["snippet"]["title"], 
-                url=domain + item["id"]["playlistId"]   
+                name=item["snippet"]["title"], 
+                link=domain + item["id"]["playlistId"]   
             ))  
     return playlists
 
@@ -29,12 +29,12 @@ def get_playlist(id: str) -> PlayListDetail:
 
     return PlayListDetail(
         id=id,
-        title=data[0]["snippet"]["title"],
+        name=data[0]["snippet"]["title"],
         description=data[0]["snippet"]["description"],
         published_at=data[0]["snippet"]["publishedAt"],
-        url=domain + id,
-        img=data[0]["snippet"]["thumbnails"]["default"]["url"],
-        itemsCount=data[0]["contentDetails"]["itemCount"]
+        link=domain + id,
+        header_image=data[0]["snippet"]["thumbnails"]["default"]["url"],
+        items_count=data[0]["contentDetails"]["itemCount"]
     )
 
 def get_playlist_items(id: str) -> list[PlayListItem]:
@@ -62,10 +62,10 @@ def get_items_from_page(playlist_id: str, page_token: str = None) -> tuple[list[
             video_id = item["contentDetails"]["videoId"]
             items.append(PlayListItem(
                 id=video_id,
-                url=f"https://www.youtube.com/watch?v={video_id}&list={id}",
-                title=item["snippet"]["title"],
+                link=f"https://www.youtube.com/watch?v={video_id}&list={id}",
+                name=item["snippet"]["title"],
                 description=item["snippet"]["description"],
                 published_at=item["contentDetails"]["videoPublishedAt"],
-                img=item["snippet"]["thumbnails"]["default"]["url"]
+                header_image=item["snippet"]["thumbnails"]["default"]["url"]
             ))
         return items, data["nextPageToken"]

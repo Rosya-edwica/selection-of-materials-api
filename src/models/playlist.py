@@ -2,24 +2,24 @@ from pydantic import BaseModel
 
 class PlayList(BaseModel):
     id: str
-    title: str
-    url: str
+    name: str
+    link: str
     
 
 class PlayListDetail(BaseModel):
     id: str
-    title: str
+    name: str
     description: str
     published_at: str
-    url: str
-    img: str
-    itemsCount: int
+    link: str
+    header_image: str
+    items_count: int
 
 
 class PlayListItem(BaseModel):
     id: str
-    title: str
+    name: str
     description: str
     published_at: str
-    url: str
-    img: str
+    link: str
+    header_image: str

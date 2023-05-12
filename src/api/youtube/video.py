@@ -14,8 +14,8 @@ def get_list_of_video(query: str, count: int = 3) -> list[Video]:
     for item in data["items"]:
         videos.append(Video(
                 id=item["id"]["videoId"],
-                title=item["snippet"]["title"],
-                url=domain + item["id"]["videoId"]
+                name=item["snippet"]["title"],
+                link=domain + item["id"]["videoId"]
             ))
     return videos
 
@@ -25,11 +25,11 @@ def get_video(id: str) -> VideoDetail | None:
         data = api.get_video_by_id(video_id=id).items[0].to_dict()
         video = VideoDetail(
             id=id,
-            url=domain + id,
-            title=data["snippet"]["title"],
+            link=domain + id,
+            name=data["snippet"]["title"],
             description=data["snippet"]["description"],
             published_at=data["snippet"]["publishedAt"],       
-            img=data["snippet"]["thumbnails"]["default"]["url"],
+            header_image=data["snippet"]["thumbnails"]["default"]["url"],
             tags=data["snippet"]["tags"], 
             views=data["statistics"]["viewCount"]
         )

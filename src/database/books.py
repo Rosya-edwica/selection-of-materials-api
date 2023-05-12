@@ -27,16 +27,16 @@ def find_books(query: str, column: str, limit: int = None, language: str = "all"
     cursor.execute(selection_query)
     result = [
         Book(
-            title=book[0],
+            name=book[0],
             description=book[1],
             language=book[2],
-            final_price=book[3],
-            full_price=book[4],
+            price=book[3],
+            old_price=book[4],
             min_age=book[5],
             rating=book[6],
             year=book[7],
-            image=book[8],
-            url=book[9],
+            header_image=book[8],
+            link=book[9],
             currency=book[10],
             pages=book[11],
             is_audio=book[12],
