@@ -3,7 +3,7 @@ from fastapi import Query
 
 QueryTextValidation = Query(
     default=..., 
-    min_length=3, 
+    min_length=1, 
     max_length=255, 
     description="Запрос в ютубе", 
     example="PostgreSQL",
