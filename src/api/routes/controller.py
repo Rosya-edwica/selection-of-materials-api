@@ -1,8 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from api.validation import *
 from models import *
 from api import youtube, litres
-
+import re
 router = APIRouter()
 
 @router.get("/")
@@ -42,6 +42,10 @@ async def search_playlist_items(id: str) -> list[PlayListItem]:
     return items
 
 @router.get("/books", response_model=list[Book], description="Подбор книг под конкретный навык")
-async def search_list_of_books(text: str = QueryTextValidation, count: int = QueryCountValidation, lang: str = QueryLanguageValidation) -> list[Book]:
+async def search_list_of_books(request: Request, text: str = QueryTextValidation, count: int = QueryCountValidation, lang: str = QueryLanguageValidation) -> list[Book]:
+    try:
+        text = re.sub(r'text=|&', '', re.findall(r'text=.*?&', request.url.query)[0]) # Пытаемся получить декодированную строку, чтобы не игнорировались знаки по типу +
+    except BaseException:
+        ...
     books = await litres.get_list_of_books(text, count, language=lang)
     return books

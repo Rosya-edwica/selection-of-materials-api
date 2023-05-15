@@ -1,2 +1,2 @@
 from database.config import connect
-from database.books import find_books_by_header, find_books_by_description
+from database.books import find_books_by_header, find_books_by_description, find_books_in_history, save_query_in_history
