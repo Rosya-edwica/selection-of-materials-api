@@ -43,5 +43,5 @@ async def search_playlist_items(id: str) -> list[PlayListItem]:
 
 @router.get("/books", response_model=list[Book], description="Подбор книг под конкретный навык")
 async def search_list_of_books(text: str = QueryTextValidation, count: int = QueryCountValidation, lang: str = QueryLanguageValidation) -> list[Book]:
-    books = litres.get_list_of_books(text, count, language=lang)
+    books = await litres.get_list_of_books(text, count, language=lang)
     return books

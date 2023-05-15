@@ -2,20 +2,20 @@ from database import connect
 from models import Book
 
 
-def find_books_by_header(query: str, count: int = 3, language: str = "all") -> list[Book]:
-    books = find_books(query, column="title", limit=count, language=language)
+async def find_books_by_header(query: str, count: int = 3, language: str = "all") -> list[Book]:
+    books = await find_books(query, column="title", limit=count, language=language)
     return books
 
 
-def find_books_by_description(query: str, count: int = 3, language: str = "all", ignore: list[int] = None) -> list[Book]:
-    books = find_books(query, column="description", limit=count, ignoreList=ignore, language=language)
+async def find_books_by_description(query: str, count: int = 3, language: str = "all", ignore: list[int] = None) -> list[Book]:
+    books = await find_books(query, column="description", limit=count, ignoreList=ignore, language=language)
     return books
 
 
-def find_books(query: str, column: str, limit: int = None, language: str = "all", ignoreList: list[int] = None) -> list[Book]:
-    connection = connect()
+async def find_books(query: str, column: str, limit: int = None, language: str = "all", ignoreList: list[int] = None) -> list[Book]:
+    connection = await connect()
     selection_query = f"""SELECT title, description, language, final_price, full_price, min_age, rating, year, image, url, currency, pages, is_audio, id 
-        FROM book WHERE lower({column}) LIKE '% {query.lower().strip()}%'"""
+        FROM book WHERE lower({column}) LIKE '% {query.lower().strip()}%' AND length(description) < 1000 """
     if ignoreList:
         selection_query += f" AND id not in ({','.join(str(i) for i in (ignoreList))})"
     if language != "all":
@@ -23,8 +23,6 @@ def find_books(query: str, column: str, limit: int = None, language: str = "all"
     if limit:
         selection_query +=  f" LIMIT {limit}"
 
-    cursor = connection.cursor()
-    cursor.execute(selection_query)
     result = [
         Book(
             name=book[0],
@@ -42,5 +40,5 @@ def find_books(query: str, column: str, limit: int = None, language: str = "all"
             is_audio=book[12],
             id=book[13]
         ) 
-            for book in cursor.fetchall()]
+            for book in await connection.fetch(selection_query)]
     return result
