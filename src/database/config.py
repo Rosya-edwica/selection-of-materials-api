@@ -8,6 +8,7 @@ if not loaded:
 
 
 async def connect():
+    print("Connection...")
     connection = await asyncpg.connect(
         database=os.getenv("POSTGRES_DATABASE"),
         user=os.getenv("POSTGRES_USER"),
