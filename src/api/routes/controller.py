@@ -46,8 +46,8 @@ async def search_playlist_items(id: str) -> list[PlayListItem]:
     return items
 
 @router.get("/books", response_model=List[SkillBooks], description="Подбор книг под конкретный навык")
-async def search_list_of_books(query: list[str] = QueryTextValidation, count: int = QueryCountValidation, lang: str = QueryLanguageValidation) -> list[SkillBooks]:
+async def search_list_of_books(text: list[str] = QueryTextValidation, count: int = QueryCountValidation, lang: str = QueryLanguageValidation) -> list[SkillBooks]:
     db = await database.connect()
-    books = await litres.get_list_of_books(db, query, count, language=lang)
+    books = await litres.get_list_of_books(db, text, count, language=lang)
     await db.close()
     return books
