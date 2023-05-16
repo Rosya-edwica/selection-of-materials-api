@@ -16,8 +16,8 @@ async def home():
         "message": "Документация проекта: http://api.edwica.ru/docs"
         }
 
-@router.get("/videos", response_model=list[Video], description="Подбор видео под конкретный навык")
-async def search_list_of_videos(text: str = QueryTextValidation, count: int = QueryCountValidation) -> list[Video]:
+@router.get("/videos", response_model=list[SkillVideos], description="Подбор видео под конкретный навык")
+async def search_list_of_videos(text: List[str] = QueryTextValidation, count: int = QueryCountValidation) -> list[SkillVideos]:
     videos = youtube.get_list_of_video(text, count)
     return videos
 
@@ -27,8 +27,8 @@ async def search_video(id: str) -> VideoDetail:
     if not video: return NOT_FOUND
     return video
 
-@router.get("/playlists", response_model=list[PlayList], description="Подбор плейлистов под конкретный навык")
-async def search_list_of_playlists(text: str = QueryTextValidation, count: int = QueryCountValidation) -> list[PlayList]:
+@router.get("/playlists", response_model=list[SkillPlaylists], description="Подбор плейлистов под конкретный навык")
+async def search_list_of_playlists(text: List[str] = QueryTextValidation, count: int = QueryCountValidation) -> list[SkillPlaylists]:
     playlists = youtube.get_list_of_playlist(text, count)
     return playlists
 

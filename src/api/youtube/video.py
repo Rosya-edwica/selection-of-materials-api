@@ -1,4 +1,4 @@
-from models import Video, VideoDetail
+from models import Video, VideoDetail, SkillVideos
 from pyyoutube import Api, error
 from contextlib import suppress
 from api.youtube.config import TOKEN
@@ -7,9 +7,15 @@ domain = "https://www.youtube.com/watch?v="
 
 api = Api(api_key=TOKEN)
 
-def get_list_of_video(query: str, count: int = 3) -> list[Video]:
+def get_list_of_video(queryList: list[str], count: int = 3) -> list[SkillVideos]:
+    result: list[SkillVideos] = []
+    for skill in queryList:
+        result.append(get_skill_videos(skill, count))
+    return result
+
+def get_skill_videos(skillName: str, count: int = 3) -> list[SkillVideos]:
     videos: list[Video] = []
-    data = api.search_by_keywords(q=query, search_type=["video"], count=count, region_code="RU").to_dict()
+    data = api.search_by_keywords(q=skillName, search_type=["video"], count=count, region_code="RU").to_dict()
     if not data["items"]: return []
     for item in data["items"]:
         videos.append(Video(
@@ -17,7 +23,10 @@ def get_list_of_video(query: str, count: int = 3) -> list[Video]:
                 name=item["snippet"]["title"],
                 link=domain + item["id"]["videoId"]
             ))
-    return videos
+    return SkillVideos(
+        skill=skillName,
+        materials=videos[:count])
+    
 
 def get_video(id: str) -> VideoDetail | None:
     data: dict = {}

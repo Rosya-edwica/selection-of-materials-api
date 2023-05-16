@@ -23,3 +23,8 @@ class PlayListItem(BaseModel):
     published_at: str
     link: str
     header_image: str
+
+
+class SkillPlaylists(BaseModel):
+    skill: str
+    materials: list[PlayList]

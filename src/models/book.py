@@ -19,5 +19,5 @@ class Book(BaseModel):
 
 class SkillBooks(BaseModel):
     skill: str
-    books: list[Book]
+    materials: list[Book]
     

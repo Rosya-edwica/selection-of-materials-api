@@ -15,3 +15,8 @@ class VideoDetail(BaseModel):
     tags: list[str]
     header_image: str
     views: int
+
+
+class SkillVideos(BaseModel):
+    skill: str
+    materials: list[Video]

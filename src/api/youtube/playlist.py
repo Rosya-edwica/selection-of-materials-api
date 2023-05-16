@@ -1,4 +1,4 @@
-from models import PlayList, PlayListDetail, PlayListItem
+from models import PlayList, PlayListDetail, PlayListItem, SkillPlaylists
 from pyyoutube import Api, error
 from contextlib import suppress
 from api.youtube.config import TOKEN
@@ -9,18 +9,26 @@ domain = "https://www.youtube.com/playlist?list="
 
 api = Api(api_key=TOKEN)
 
+def get_list_of_playlist(queryList: list[str], count: int = 3) -> list[SkillPlaylists]:
+    result: list[SkillPlaylists] = []
+    for skill in queryList:
+        result.append(get_skill_playlists(skill, count))
+    return result   
 
-def get_list_of_playlist(query: str, count: int = 3) -> list[PlayList]:
+def get_skill_playlists(skillName: str, count: int = 3) -> SkillPlaylists:
     playlists: list[PlayList] = []
     with suppress(IndexError, error.PyYouTubeException):
-        data = api.search_by_keywords(q=query, search_type=["playlist"], count=count, region_code="RU").to_dict()
+        data = api.search_by_keywords(q=skillName, search_type=["playlist"], count=count, region_code="RU").to_dict()
         for item in data["items"]:  
             playlists.append(PlayList(  
                 id=item["id"]["playlistId"],    
                 name=item["snippet"]["title"], 
                 link=domain + item["id"]["playlistId"]   
             ))  
-    return playlists
+    return SkillPlaylists(
+        skill=skillName,
+        materials=playlists[:count]
+    )
 
 
 def get_playlist(id: str) -> PlayListDetail:
