@@ -1,20 +1,13 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter
+from typing import List
+
 from api.validation import *
 from models import *
-from api import youtube, litres
-import re
-from urllib.parse import unquote
 import database
-import asyncio
+from api import youtube, litres
 
-# db = None
+
 router = APIRouter()
-
-# async def InitDatabase():
-#     global db
-#     db = await database.connect()
-
-
 
 @router.get("/")
 async def home():
@@ -52,13 +45,9 @@ async def search_playlist_items(id: str) -> list[PlayListItem]:
     if not items: return NOT_FOUND
     return items
 
-@router.get("/books", response_model=list[Book], description="Подбор книг под конкретный навык")
-async def search_list_of_books(request: Request, text: str = QueryTextValidation, count: int = QueryCountValidation, lang: str = QueryLanguageValidation) -> list[Book]:
-    try:
-        text = re.sub(r'text=|&', '', re.findall(r'text=.*?&', request.url.query)[0]) # Пытаемся получить декодированную строку, чтобы не игнорировались знаки по типу +
-    except BaseException:
-        ...
+@router.get("/books", response_model=List[SkillBooks], description="Подбор книг под конкретный навык")
+async def search_list_of_books(query: list[str] = QueryTextValidation, count: int = QueryCountValidation, lang: str = QueryLanguageValidation) -> list[SkillBooks]:
     db = await database.connect()
-    books = await litres.get_list_of_books(db, unquote(text), count, language=lang)
+    books = await litres.get_list_of_books(db, query, count, language=lang)
     await db.close()
     return books

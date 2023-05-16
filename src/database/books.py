@@ -1,6 +1,6 @@
-from models import Book
+from models import Book, SkillBooks
 
-async def find_books_by_header(db, query: str, count: int = 3, language: str = "all", ignore: list[int] = None) -> list[Book]:
+async def find_books_by_header(db, query: str, count: int = 3, language: str = "all", ignore: list[int] = None) -> list[SkillBooks]:
     books = await find_books(db, query, column="title", language=language, ignoreList=ignore)
     await save_query_in_history(db, query, (book.id for book in books)) # Сохраняем всё
     return books[:count] # Отправляем ограниченное количество
@@ -11,9 +11,9 @@ async def find_books_by_description(db, query: str, count: int = 3, language: st
     await save_query_in_history(db, query, (book.id for book in books))
     return books[:count]
 
-async def find_books(db, query: str, column: str, limit: int = None, language: str = "all", ignoreList: list[int] = None) -> list[Book]:
+async def find_books(db, query: str, column: str, limit: int = 10, language: str = "all", ignoreList: list[int] = None) -> list[Book]:
     selection_query = f"""SELECT title, description, language, final_price, full_price, min_age, rating, year, image, url, currency, pages, is_audio, id 
-        FROM book WHERE tsv_en @@ to_tsquery('english', '{query.lower()}') LIMIT 10""" # Фиктивный лимит
+        FROM book WHERE tsv_en @@ to_tsquery('english', '{query.lower()}')""" # Фиктивный лимит
     if ignoreList:
         selection_query += f" AND id not in ({','.join(str(i) for i in (ignoreList))})"
     if language != "all":
@@ -39,6 +39,38 @@ async def find_books(db, query: str, column: str, limit: int = None, language: s
         ) 
             for book in await db.fetch(selection_query)]
     return result
+
+async def get_book_from_table(db, query: str, limit: int = None, language: str = "all", ignoreList: list[int] = None) -> list[SkillBooks]:
+    query = f"""SELECT title, description, language, final_price, full_price, min_age, rating, year, image, url, currency, pages, is_audio, id 
+        FROM book WHERE tsv_en @@ to_tsquery('english', '{query.lower()}') LIMIT 10"""
+    if ignoreList:
+        selection_query += f" AND id not in ({','.join(str(i) for i in (ignoreList))})"
+    if language != "all":
+        selection_query += f" AND language = '{language}'"
+    if limit:
+        selection_query +=  f" LIMIT {limit}"
+    books = [
+        Book(
+            name=book[0],
+            description=book[1],
+            language=book[2],
+            price=book[3],
+            old_price=book[4],
+            min_age=book[5],
+            rating=book[6],
+            year=book[7],
+            header_image=book[8],
+            link=book[9],
+            currency=book[10],
+            pages=book[11],
+            is_audio=book[12],
+            id=book[13]
+        ) 
+            for book in await db.fetch(query)]
+    return SkillBooks(
+        skill=query,
+        books=books[:limit]
+    )
 
 async def find_books_in_history(db, query: str) -> list[Book]:
     # query = f"""SELECT title, description, language, final_price, full_price, min_age, rating, year, image, url, currency, pages, is_audio, id

@@ -15,3 +15,9 @@ class Book(BaseModel):
     rating: float
     pages: int | None
     year: int | None
+
+
+class SkillBooks(BaseModel):
+    skill: str
+    books: list[Book]
+    
