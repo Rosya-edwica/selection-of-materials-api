@@ -15,14 +15,13 @@ async def find_books_by_description(query: str, count: int = 3, language: str = 
 async def find_books(query: str, column: str, limit: int = None, language: str = "all", ignoreList: list[int] = None) -> list[Book]:
     connection = await connect()
     selection_query = f"""SELECT title, description, language, final_price, full_price, min_age, rating, year, image, url, currency, pages, is_audio, id 
-        FROM book WHERE lower({column}) LIKE '% {query.lower().strip()}%' AND length(description) < 1000 """
+        FROM book WHERE tsv_en @@ to_tsquery('english', '{query.lower()}')"""
     if ignoreList:
         selection_query += f" AND id not in ({','.join(str(i) for i in (ignoreList))})"
     if language != "all":
         selection_query += f" AND language = '{language}'"
     if limit:
         selection_query +=  f" LIMIT {limit}"
-
     result = [
         Book(
             name=book[0],

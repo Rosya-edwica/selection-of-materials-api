@@ -9,6 +9,8 @@ async def get_list_of_books(query: str, count: int, language: str = "all") -> li
         return history_books[:count]
 
     books = await find_books_by_header(query, count, language)
+    if len(books) == 0:
+        return []
     if len(books) < count:
         books += await find_books_by_description(query, count, language, ignore = [i.id for i in books])
     return books[:count]

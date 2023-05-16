@@ -3,6 +3,9 @@ from api.validation import *
 from models import *
 from api import youtube, litres
 import re
+from urllib.parse import unquote
+
+
 router = APIRouter()
 
 @router.get("/")
@@ -47,5 +50,5 @@ async def search_list_of_books(request: Request, text: str = QueryTextValidation
         text = re.sub(r'text=|&', '', re.findall(r'text=.*?&', request.url.query)[0]) # Пытаемся получить декодированную строку, чтобы не игнорировались знаки по типу +
     except BaseException:
         ...
-    books = await litres.get_list_of_books(text, count, language=lang)
+    books = await litres.get_list_of_books(unquote(text), count, language=lang)
     return books
