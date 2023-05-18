@@ -2,8 +2,12 @@ from models import Book, SkillBooks
 
 async def find_books_by_header(db, query: str, count: int = 3, language: str = "all", ignore: list[int] = None) -> list[SkillBooks]:
     books = await find_books(db, query, column="title", language=language, ignoreList=ignore)
-    await save_query_in_history(db, query, (book.id for book in books)) # Сохраняем всё
-    return books[:count] # Отправляем ограниченное количество
+    if not books:
+        await save_undetected_skill(db, query)
+        return []
+    else:
+        await save_query_in_history(db, query, (book.id for book in books)) # Сохраняем всё
+        return books[:count] # Отправляем ограниченное количество
 
 
 async def find_books_by_description(db, query: str, count: int = 3, language: str = "all", ignore: list[int] = None) -> list[Book]:
@@ -13,7 +17,8 @@ async def find_books_by_description(db, query: str, count: int = 3, language: st
 
 async def find_books(db, query: str, column: str, limit: int = 10, language: str = "all", ignoreList: list[int] = None) -> list[Book]:
     selection_query = f"""SELECT title, description, language, final_price, full_price, min_age, rating, year, image, url, currency, pages, is_audio, id 
-        FROM book WHERE tsv_en @@ to_tsquery('english', '{query.lower()}')""" # Фиктивный лимит
+        FROM book WHERE """ + create_search_vector_query(query.split())
+
     if ignoreList:
         selection_query += f" AND id not in ({','.join(str(i) for i in (ignoreList))})"
     if language != "all":
@@ -72,13 +77,13 @@ async def get_book_from_table(db, query: str, limit: int = None, language: str =
         books=books[:limit]
     )
 
-async def find_books_in_history(db, query: str) -> list[Book]:
+async def find_books_in_history(db, skillName: str) -> tuple[list[Book], bool]:
     # query = f"""SELECT title, description, language, final_price, full_price, min_age, rating, year, image, url, currency, pages, is_audio, id
     #         FROM book WHERE id in (SELECT book_id FROM skill_to_book WHERE lower(skill) = '{query.lower().strip()}')"""
     query = f"""SELECT title, description, language, final_price, full_price, min_age, rating, year, image, url, currency, pages, is_audio, book.id
             FROM book
             INNER JOIN skill_to_book ON book.id = skill_to_book.book_id
-            WHERE skill_to_book.skill = '{query.lower().strip()}'"""
+            WHERE LOWER(skill_to_book.skill) = '{skillName.lower().strip()}'"""
     books = [
         Book(
             name=book[0],
@@ -97,7 +102,11 @@ async def find_books_in_history(db, query: str) -> list[Book]:
             id=book[13]
         ) 
             for book in await db.fetch(query)]
-    return books
+    check_skill_exist = await db.fetch(f"SELECT id FROM skill_to_book WHERE LOWER(skill) = '{skillName.lower().strip()}'") 
+    if check_skill_exist:
+        return books, True
+    else:
+        return [], False
 
 
 async def save_query_in_history(db, query: str, book_ids: list[int]):
@@ -106,3 +115,10 @@ async def save_query_in_history(db, query: str, book_ids: list[int]):
 def create_insert_query(values: list[str]) -> str:
     query = ",".join((f"""('{i.replace("'", '`')}')""" for i in values))
     return query
+
+def create_search_vector_query(values: list[str]) -> str:
+    query = " AND ".join((f"""tsv_en @@ to_tsquery('english', '{i.lower().replace("'", '`')}')""" for i in values))
+    return query
+
+async def save_undetected_skill(db, skill: str):
+    await db.execute(f"INSERT INTO skill_to_book(skill, book_id) VALUES('{skill}', NULL) ON CONFLICT DO NOTHING")

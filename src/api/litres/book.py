@@ -10,12 +10,16 @@ async def get_list_of_books(db, skillList: list[str], count: int, language: str 
 
 
 async def get_books(db, skillName: str, count: int, language: str = "all") -> SkillBooks:
-    history_books = await find_books_in_history(db, skillName)
+    history_books, skill_exist = await find_books_in_history(db, skillName)
     if history_books: 
         return SkillBooks(
             skill=skillName,
             materials=history_books[:count])
-
+    if skill_exist:
+        return SkillBooks(
+            skill=skillName,
+            materials=[]
+        )
     books = await find_books_by_header(db, skillName, count, language)
     # Пока не будем использовать поиск по описанию
     # if len(books) < count:
