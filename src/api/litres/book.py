@@ -1,5 +1,5 @@
 from models import SkillBooks
-from database import find_books_by_header, find_books_by_description, find_books_in_history, save_query_in_history
+from database import find_books_by_header, find_books_in_history
 
 async def get_list_of_books(db, skillList: list[str], count: int, language: str = "all", free: bool = None) -> list[SkillBooks]:
     result: list[SkillBooks] = []

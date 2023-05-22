@@ -18,7 +18,8 @@ async def home():
 
 @router.get("/videos", response_model=list[SkillVideos], description="Подбор видео под конкретный навык")
 async def search_list_of_videos(text: List[str] = QueryTextValidation, count: int = QueryCountValidation) -> list[SkillVideos]:
-    videos = youtube.get_list_of_video(text, count)
+    db = await database.connect()
+    videos = await youtube.get_list_of_video(db, text, count)
     return videos
 
 @router.get("/videos/{id}", response_model=VideoDetail, description="Подробная информация о видео")
@@ -29,7 +30,8 @@ async def search_video(id: str) -> VideoDetail:
 
 @router.get("/playlists", response_model=list[SkillPlaylists], description="Подбор плейлистов под конкретный навык")
 async def search_list_of_playlists(text: List[str] = QueryTextValidation, count: int = QueryCountValidation) -> list[SkillPlaylists]:
-    playlists = youtube.get_list_of_playlist(text, count)
+    db = await database.connect()
+    playlists = await youtube.get_list_of_playlist(db, text, count)
     return playlists
 
 @router.get("/playlists/{id}", response_model=PlayListDetail, description="Подробная информация о плейлисте")
