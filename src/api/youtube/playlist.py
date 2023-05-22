@@ -23,7 +23,8 @@ def get_skill_playlists(skillName: str, count: int = 3) -> SkillPlaylists:
             playlists.append(PlayList(  
                 id=item["id"]["playlistId"],    
                 name=item["snippet"]["title"], 
-                link=domain + item["id"]["playlistId"]   
+                link=domain + item["id"]["playlistId"],
+                header_image=data[0]["snippet"]["thumbnails"]["default"]["url"]
             ))  
     return SkillPlaylists(
         skill=skillName,

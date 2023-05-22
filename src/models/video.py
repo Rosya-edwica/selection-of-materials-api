@@ -4,6 +4,7 @@ class Video(BaseModel):
     id: str
     name: str
     link: str
+    header_image: str
     
 
 class VideoDetail(BaseModel):

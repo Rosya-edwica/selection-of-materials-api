@@ -4,6 +4,7 @@ class PlayList(BaseModel):
     id: str
     name: str
     link: str
+    header_image: str
     
 
 class PlayListDetail(BaseModel):

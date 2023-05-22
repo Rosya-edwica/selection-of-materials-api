@@ -21,7 +21,8 @@ def get_skill_videos(skillName: str, count: int = 3) -> list[SkillVideos]:
         videos.append(Video(
                 id=item["id"]["videoId"],
                 name=item["snippet"]["title"],
-                link=domain + item["id"]["videoId"]
+                link=domain + item["id"]["videoId"],
+                header_image=data["snippet"]["thumbnails"]["default"]["url"]
             ))
     return SkillVideos(
         skill=skillName,
