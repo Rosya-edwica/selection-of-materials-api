@@ -20,7 +20,7 @@ async def get_books(db, skillName: str, count: int, language: str = "all",  free
             skill=skillName,
             materials=[]
         )
-    books = await find_books_by_header(db, skillName, count, language, free)
+    books = await find_books_by_header(db, skillName, count, language, free=free)
     # Пока не будем использовать поиск по описанию
     # if len(books) < count:
     #     books += await find_books_by_description(db, query, count, language, ignore = [i.id for i in books])

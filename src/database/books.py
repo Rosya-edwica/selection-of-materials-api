@@ -10,12 +10,12 @@ async def find_books_by_header(db, query: str, count: int = 3, language: str = "
         return books[:count] # Отправляем ограниченное количество
 
 
-async def find_books_by_description(db, query: str, count: int = 3, language: str = "all", ignore: list[int] = None) -> list[Book]:
-    books = await find_books(db, query, column="description", ignoreList=ignore, language=language)
+async def find_books_by_description(db, query: str, count: int = 3, language: str = "all", ignore: list[int] = None, free: bool = None) -> list[Book]:
+    books = await find_books(db, query, column="description", ignoreList=ignore, language=language, free=free)
     await save_query_in_history(db, query, (book.id for book in books))
     return books[:count]
 
-async def find_books(db, query: str, column: str, limit: int = 10, language: str = "all", ignoreList: list[int] = None) -> list[Book]:
+async def find_books(db, query: str, column: str, limit: int = 10, language: str = "all", ignoreList: list[int] = None, free: bool = None) -> list[Book]:
     selection_query = f"""SELECT title, description, language, final_price, full_price, min_age, rating, year, image, url, currency, pages, is_audio, id 
         FROM book WHERE """ + create_search_vector_query(query.split())
 
@@ -23,8 +23,13 @@ async def find_books(db, query: str, column: str, limit: int = 10, language: str
         selection_query += f" AND id not in ({','.join(str(i) for i in (ignoreList))})"
     if language != "all":
         selection_query += f" AND language = '{language}'"
+    if free == True:
+        selection_query += " AND final_price IS NULL"
+    elif free == "False":
+        selection_query += " AND final_price IS NOT NULL"
     if limit:
         selection_query +=  f" LIMIT {limit}"
+    
     result = [
         Book(
             name=book[0],
@@ -52,13 +57,13 @@ async def get_book_from_table(db, query: str, limit: int = None, language: str =
         selection_query += f" AND id not in ({','.join(str(i) for i in (ignoreList))})"
     if language != "all":
         selection_query += f" AND language = '{language}'"
-    if limit:
-        selection_query +=  f" LIMIT {limit}"
-    
     if free == True:
         query += " AND final_price IS NULL"
     elif free == "False":
         query += " AND final_price IS NOT NULL"
+    if limit:
+        selection_query +=  f" LIMIT {limit}"
+    
     books = [
         Book(
             name=book[0],
