@@ -23,3 +23,9 @@ QueryLanguageValidation = Query(
     description="На каком языке написана книга",
     example="ru"
 )
+
+QueryBoolValidation = Query(
+    default=None,
+    description="True | False",
+    example=True
+)

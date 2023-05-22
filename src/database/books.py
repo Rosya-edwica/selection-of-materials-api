@@ -1,7 +1,7 @@
 from models import Book, SkillBooks
 
-async def find_books_by_header(db, query: str, count: int = 3, language: str = "all", ignore: list[int] = None) -> list[SkillBooks]:
-    books = await find_books(db, query, column="title", language=language, ignoreList=ignore)
+async def find_books_by_header(db, query: str, count: int = 3, language: str = "all", ignore: list[int] = None, free: bool = None) -> list[SkillBooks]:
+    books = await find_books(db, query, column="title", language=language, ignoreList=ignore, free=free)
     if not books:
         await save_undetected_skill(db, query)
         return []
@@ -45,7 +45,7 @@ async def find_books(db, query: str, column: str, limit: int = 10, language: str
             for book in await db.fetch(selection_query)]
     return result
 
-async def get_book_from_table(db, query: str, limit: int = None, language: str = "all", ignoreList: list[int] = None) -> list[SkillBooks]:
+async def get_book_from_table(db, query: str, limit: int = None, language: str = "all", ignoreList: list[int] = None, free: bool = None) -> list[SkillBooks]:
     query = f"""SELECT title, description, language, final_price, full_price, min_age, rating, year, image, url, currency, pages, is_audio, id 
         FROM book WHERE tsv_en @@ to_tsquery('english', '{query.lower()}') LIMIT 10"""
     if ignoreList:
@@ -54,6 +54,11 @@ async def get_book_from_table(db, query: str, limit: int = None, language: str =
         selection_query += f" AND language = '{language}'"
     if limit:
         selection_query +=  f" LIMIT {limit}"
+    
+    if free == True:
+        query += " AND final_price IS NULL"
+    elif free == "False":
+        query += " AND final_price IS NOT NULL"
     books = [
         Book(
             name=book[0],
@@ -77,13 +82,17 @@ async def get_book_from_table(db, query: str, limit: int = None, language: str =
         books=books[:limit]
     )
 
-async def find_books_in_history(db, skillName: str) -> tuple[list[Book], bool]:
+async def find_books_in_history(db, skillName: str, free: bool = None) -> tuple[list[Book], bool]:
     # query = f"""SELECT title, description, language, final_price, full_price, min_age, rating, year, image, url, currency, pages, is_audio, id
     #         FROM book WHERE id in (SELECT book_id FROM skill_to_book WHERE lower(skill) = '{query.lower().strip()}')"""
     query = f"""SELECT title, description, language, final_price, full_price, min_age, rating, year, image, url, currency, pages, is_audio, book.id
             FROM book
             INNER JOIN skill_to_book ON book.id = skill_to_book.book_id
             WHERE LOWER(skill_to_book.skill) = '{skillName.lower().strip()}'"""
+    if free == True:
+        query += " AND final_price IS NULL"
+    elif free == "False":
+        query += " AND final_price IS NOT NULL"
     books = [
         Book(
             name=book[0],
