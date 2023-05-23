@@ -29,6 +29,7 @@ def get_html(query: str) -> str:
     return html
 
 def get_youtube_data_by_query(query: str) -> dict:
+    query = query.replace("/", "_")
     html = get_html(query)
     scripts = re.findall("<script.*?</script>", html)
     data = scripts[-5]
