@@ -16,7 +16,7 @@ async def get_list_of_playlist(db, queryList: list[str], count: int = 3) -> list
 
 async def get_skill_playlists(db, skill_name: str, count: int = 3) -> list[SkillPlaylists]:
     playlists: list[PlayList] = []
-    json_data = get_youtube_data_by_query(skill_name)
+    json_data = await get_youtube_data_by_query(skill_name)
     
     for i in json_data["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"]:
         if "itemSectionRenderer" not in i.keys(): continue

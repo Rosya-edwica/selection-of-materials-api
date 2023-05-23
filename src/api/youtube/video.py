@@ -16,7 +16,7 @@ async def get_list_of_video(db, queryList: list[str], count: int = 3) -> list[Sk
 
 async def get_skill_videos(db, skill_name: str, count: int = 3) -> list[SkillVideos]:
     videos: list[Video] = []
-    json_data = get_youtube_data_by_query(query=skill_name)
+    json_data = await get_youtube_data_by_query(query=skill_name)
     for item in json_data["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"]:
         if "itemSectionRenderer" not in item.keys(): continue
         
