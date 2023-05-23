@@ -28,7 +28,7 @@ def get_html(query: str) -> str:
     return html
 
 def get_youtube_data_by_query(query: str) -> dict:
-    query_filename =f"{randint(1_000_00, 5_000_00)}_{query}.json"
+    query_filename =f"{randint(1_000_00, 5_000_00)}_timed_file.json"
     
     html = get_html(query)
     scripts = re.findall("<script.*?</script>", html)
