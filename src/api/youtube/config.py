@@ -33,9 +33,9 @@ def get_youtube_data_by_query(query: str) -> dict:
     scripts = re.findall("<script.*?</script>", html)
     data = scripts[-5]
     json_data = re.sub("<script.*? =|;</script>", "", data)
-    with open(DEFAULT_JSON_FILE, encoding="utf-8", mode="w") as file:
+    with open(query+DEFAULT_JSON_FILE, encoding="utf-8", mode="w") as file:
         json.dump(json.JSONDecoder().decode(json_data), file, ensure_ascii=True, indent=2)
 
-    data = json.load(open(DEFAULT_JSON_FILE, encoding="utf-8", mode="r"))
-    os.remove(DEFAULT_JSON_FILE)
+    data = json.load(open(query+DEFAULT_JSON_FILE, encoding="utf-8", mode="r"))
+    os.remove(query+DEFAULT_JSON_FILE)
     return data
