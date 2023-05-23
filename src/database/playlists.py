@@ -2,7 +2,7 @@ from models import SkillPlaylists, PlayList
 
 
 async def save_playlists_to_history(db, skill: str, playlists: list[PlayList]):
-    await db.executemany(f"INSERT INTO playlist(id, name, url, img) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING;", [(playlist.id, playlist.name, playlist.link, playlist.header_image) for playlist in playlists])
+    await db.executemany(f"INSERT INTO playlist(id, name, url, img) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING;", [(playlist.id, playlist.name.replace("'", "`").replace('"', '`'), playlist.link, playlist.header_image) for playlist in playlists])
     await set_connect_between_playlists_and_skill(db, skill, playlists_ids=[playlist.id for playlist in playlists])
 
 async def set_connect_between_playlists_and_skill(db, skill: str, playlists_ids: list[str]):

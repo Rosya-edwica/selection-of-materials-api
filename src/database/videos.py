@@ -1,8 +1,7 @@
 from models import SkillVideos, Video
 
-
 async def save_videos_to_history(db, skill: str, videos: list[Video]):
-    await db.executemany(f"INSERT INTO video(id, name, url, img) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING;", [(video.id, video.name, video.link, video.header_image) for video in videos])
+    await db.executemany(f"INSERT INTO video(id, name, url, img) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING;", [(video.id, video.name.replace("'", "`").replace('"', '`'), video.link, video.header_image) for video in videos])
     await set_connect_between_videos_and_skill(db, skill, video_ids=[video.id for video in videos])
 
 async def set_connect_between_videos_and_skill(db, skill: str, video_ids: list[str]):
