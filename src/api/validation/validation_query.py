@@ -10,9 +10,9 @@ QueryTextValidation = Query(
 )
 
 QueryCountValidation = Query(
-    default=3, 
+    default=10, 
     gt=0, 
-    le=5,
+    le=20,
     description="Количество ожидаемых видео/плейлистов/книг",
 )
 
