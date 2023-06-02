@@ -1,0 +1,69 @@
+[
+{
+    "query": "Менеджер",
+    "platforms": [
+        {
+            "platform": "superjob",
+            "vacancies": [
+                {
+                    "id": "1",
+                    "name": "Вакансия 1",
+                    "company": "Компания 1",
+                    "url": "string",
+                    "salary_from": 0,
+                    "salary_to": 0,
+                    "currency": "string",
+                    "skills": [
+                      "skill 1",
+                      "skill 2"
+                    ]
+                  },
+                  {
+                    "id": "2",
+                    "name": "Вакансия 2",
+                    "company": "Компания 2",
+                    "url": "string",
+                    "salary_from": 0,
+                    "salary_to": 0,
+                    "currency": "string",
+                    "skills": [
+                      "skill 1",
+                      "skill 2"
+                    ]
+                  }
+            ]
+        },
+        {
+            "platform": "trudvsem",
+            "vacancies": [
+                {
+                    "id": "1",
+                    "name": "Вакансия 1",
+                    "company": "Компания 1",
+                    "url": "string",
+                    "salary_from": 0,
+                    "salary_to": 0,
+                    "currency": "string",
+                    "skills": [
+                      "skill 1",
+                      "skill 2"
+                    ]
+                  },
+                  {
+                    "id": "2",
+                    "name": "Вакансия 2",
+                    "company": "Компания 2",
+                    "url": "string",
+                    "salary_from": 0,
+                    "salary_to": 0,
+                    "currency": "string",
+                    "skills": [
+                      "skill 1",
+                      "skill 2"
+                    ]
+                  }
+            ]
+        }
+    ]
+}
+]

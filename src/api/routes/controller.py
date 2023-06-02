@@ -4,7 +4,7 @@ from typing import List
 from api.validation import *
 from models import *
 import database
-from api import youtube, litres
+from api import youtube, litres, vacancies
 
 
 router = APIRouter()
@@ -53,3 +53,9 @@ async def search_list_of_books(text: list[str] = QueryTextValidation, count: int
     books = await litres.get_list_of_books(db, text, count, language=lang, free=free)
     await db.close()
     return books
+
+
+@router.get("/vacancies", response_model=List[ProfessionVacancies], description="Поиск вакансий на Superjob/TrudVsem")
+async def search_list_of_vacancies(text: list[str] = QueryTextValidation, count: int = 3) -> list[ProfessionVacancies]:
+    items = await vacancies.find_vacancies(text, count)
+    return items

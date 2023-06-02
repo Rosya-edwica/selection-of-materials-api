@@ -1,0 +1,35 @@
+[
+    {
+        "query": "Менеджер",
+        "vacancies": [
+            {
+                "id": "1",
+                "platform": "superjob",
+                "name": "Вакансия 1",
+                "company": "Компания 1",
+                "url": "string",
+                "salary_from": 0,
+                "salary_to": 0,
+                "currency": "string",
+                "skills": [
+                    "skill 1",
+                    "skill 2"
+                ]
+            },
+            {
+                "id": "2",
+                "platform": "trudvsem",
+                "name": "Вакансия 2",
+                "company": "Компания 2",
+                "url": "string",
+                "salary_from": 0,
+                "salary_to": 0,
+                "currency": "string",
+                "skills": [
+                    "skill 1",
+                    "skill 2"
+                ]
+            }
+        ]
+    }
+]
