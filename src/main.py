@@ -5,7 +5,6 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from api.routes.controller import router
 
-# TODO: Исправить проблему с ограничениями запросов в день
 
 app = FastAPI(
     version="1.1",
