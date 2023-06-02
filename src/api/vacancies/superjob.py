@@ -13,7 +13,7 @@ HEADERS = {
 
 async def find_vacancies_by_profession(name: str, count: int) -> list[Vacancy]:
     params = {
-        "count": 100,
+        "count": count,
         "keywords[0][srws]": 1, # Ищем в названии вакансии
         "keywords[0][skwc]": "particular", # Ищем точную фразу 
         "keywords[0][keys]": name, # Фраза

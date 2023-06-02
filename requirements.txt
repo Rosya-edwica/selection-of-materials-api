@@ -3,3 +3,6 @@ fastapi[all]
 gunicorn
 wheel
 psycopg2-binary
+asyncio
+aiohttp
+python-dotenv
