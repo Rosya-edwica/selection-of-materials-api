@@ -1,15 +1,9 @@
 import os
 
-from api.vacancies.config import get_json, update_access_token
+from api.vacancies.config import get_json, update_access_token, HEADERS
 from models import Vacancy
 
 
-
-HEADERS = {
-    "User-Agent": "",
-    "Authorization": f"Bearer {os.getenv('SUPERJOB_TOKEN')}",
-    "X-Api-App-id": os.getenv("SUPERJOB_SECRET")
-}
 
 async def find_vacancies_by_profession(name: str, count: int) -> list[Vacancy]:
     params = {
@@ -21,8 +15,9 @@ async def find_vacancies_by_profession(name: str, count: int) -> list[Vacancy]:
     data = await get_json("https://api.superjob.ru/2.0/vacancies/?", params=params, headers=HEADERS)
     if not data:
         print("Пробуем снова получить токен")
-        HEADERS["Authorization"] = update_access_token(HEADERS["Authorization"])
-        return find_vacancies_by_profession(name)
+        HEADERS["Authorization"] = await update_access_token(HEADERS["Authorization"])
+        vacancies = await find_vacancies_by_profession(name, count)
+        return vacancies
     items = parse_vacancies(data["objects"])    
     return items[:count]
 

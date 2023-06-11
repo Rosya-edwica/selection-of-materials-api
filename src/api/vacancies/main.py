@@ -14,6 +14,7 @@ async def find_task(query: str, count: int) -> ProfessionVacancies:
         asyncio.create_task(superjob.find_vacancies_by_profession(query, count))
     ]
     platform_vacancies = await asyncio.gather(*tasks)
+    print(platform_vacancies)
     return ProfessionVacancies(
         query=query,
         vacancies=list(chain(*platform_vacancies))

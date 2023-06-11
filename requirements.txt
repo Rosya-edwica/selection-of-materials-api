@@ -6,3 +6,4 @@ psycopg2-binary
 asyncio
 aiohttp
 python-dotenv
+asyncpg
