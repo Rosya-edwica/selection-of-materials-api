@@ -7,6 +7,7 @@ async def find_vacancies_by_profession(name: str, count: int) -> Vacancy:
         "text": name
     }
     data = await get_json(url="http://opendata.trudvsem.ru/api/v1/vacancies", params=params)
+    if "vacancies" not in data["results"].keys(): return []
     items = parse_vacancies(data["results"]["vacancies"])
     return items[:count]
 

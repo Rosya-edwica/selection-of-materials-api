@@ -56,6 +56,7 @@ async def search_list_of_books(text: list[str] = QueryTextValidation, count: int
 
 
 @router.get("/vacancies", response_model=List[ProfessionVacancies], description="Поиск вакансий на Superjob/TrudVsem")
-async def search_list_of_vacancies(text: list[str] = QueryTextValidation, count: int = 3) -> list[ProfessionVacancies]:
-    items = await vacancies.find_vacancies(text, count)
+async def search_list_of_vacancies(text: list[str] = QueryTextValidation, count: int = 3, platform: str = None) -> list[ProfessionVacancies]:
+    platform = platform.lower().strip() if platform else None
+    items = await vacancies.find_vacancies(text, count, platform)
     return items

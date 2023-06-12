@@ -15,8 +15,6 @@ if not env: exit("Ошибка! Не удалось найти файл .env!")
 async def get_json(url: str, headers: dict = None, params = dict | None) -> list | None:
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers, params=params) as resp:
-            print(resp.url)
-            print(resp.content)
             if resp.status != 200: return []
             data = await resp.json()
             return data
