@@ -15,3 +15,9 @@ class Vacancy(BaseModel):
 class ProfessionVacancies(BaseModel):
     query: str
     vacancies: list[Vacancy]
+
+
+class Salary(BaseModel):
+    From: int
+    To: int
+    Currency: str

@@ -2,6 +2,7 @@ import aiohttp
 import os
 import dotenv
 
+from bs4 import BeautifulSoup
 
 HEADERS = {
     "User-Agent": "",
@@ -10,14 +11,23 @@ HEADERS = {
 }
 
 env = dotenv.load_dotenv(".env")
-if not env: exit("Ошибка! Не удалось найти файл .env!")
+if not env:
+    exit("Ошибка! Не удалось найти файл .env!")
 
-async def get_json(url: str, headers: dict = None, params = dict | None) -> list | None:
+
+async def get_json(url: str, headers: dict = None, params: dict = None) -> dict | list | None:
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers, params=params) as resp:
             if resp.status != 200: return []
             data = await resp.json()
             return data
+
+
+async def get_soup(url: str, headers: dict = None) -> BeautifulSoup:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, headers=headers) as resp:
+            soup = BeautifulSoup(await resp.read(), "lxml")
+            return soup
 
 
 async def update_access_token(old_token: str) -> str:
@@ -32,3 +42,15 @@ async def update_access_token(old_token: str) -> str:
     token = data["access_token"]
     dotenv.set_key(".env", "SUPERJOB_TOKEN", token)
     return f"Bearer {token}"
+
+
+def filter_currency(text: str) -> str:
+    match text.lower():
+        case "руб." | "rub" | "₽" | "«руб.»":
+            return "RUB"
+        case "дол." | "usd" | "$":
+            return "USD"
+        case "евро" | "eur":
+            return "EUR"
+        case _:
+            return text

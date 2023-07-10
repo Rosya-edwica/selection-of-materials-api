@@ -1,8 +1,8 @@
 from models import Vacancy
-from api.vacancies.config import get_json
+from api.vacancies.config import get_json, filter_currency
 
 
-async def find_vacancies_by_profession(name: str, count: int) -> Vacancy:
+async def find_vacancies_by_profession(name: str, count: int) -> list[Vacancy]:
     params = {
         "text": name
     }
@@ -22,8 +22,10 @@ def parse_vacancies(objects: list[dict]) -> list[Vacancy]:
             company=vacancy["company"]["name"],
             salary_from=vacancy["salary_min"] if vacancy["salary_min"] else None,
             salary_to=vacancy["salary_max"] if vacancy["salary_max"] else None,
-            currency=vacancy["currency"],
+            currency=filter_currency(vacancy["currency"]),
             skills=[],
             url=vacancy["vac_url"]
         ))
     return items
+
+
