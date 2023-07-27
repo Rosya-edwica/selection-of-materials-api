@@ -36,7 +36,7 @@ async def search_list_of_playlists(text: List[str] = QueryTextValidation, count:
 
 @router.get("/playlists/{id}", response_model=PlayListDetail, description="Подробная информация о плейлисте")
 async def search_playlist(id: str) -> PlayListDetail:
-    playlist = youtube.get_playlist(id) 
+    playlist = youtube.get_playlist(id)
     if not playlist: return NOT_FOUND
     return playlist
 
@@ -56,7 +56,8 @@ async def search_list_of_books(text: list[str] = QueryTextValidation, count: int
 
 
 @router.get("/vacancies", response_model=List[ProfessionVacancies], description="Поиск вакансий на Superjob/TrudVsem")
-async def search_list_of_vacancies(text: list[str] = QueryTextValidation, count: int = 3, platform: str = None) -> list[ProfessionVacancies]:
+async def search_list_of_vacancies(text: list[str] = QueryTextValidation, count: int = 3, platform: str = None,
+                                   city: str = None) -> list[ProfessionVacancies]:
     platform = platform.lower().strip() if platform else None
-    items = await vacancies.find_vacancies(text, count, platform)
+    items = await vacancies.find_vacancies(text, count, platform, city)
     return items

@@ -1,3 +1,5 @@
+import re
+
 from models import Vacancy
 from api.vacancies.config import get_json, filter_currency
 
@@ -15,10 +17,12 @@ def parse_vacancies(objects: list[dict]) -> list[Vacancy]:
     items: list[Vacancy] = []
     for item in objects:
         vacancy = item["vacancy"]
+
         items.append(Vacancy(
             id=vacancy["id"],
             name=vacancy["job-name"],
             platform="trudvsem",
+            city=get_city(vacancy),
             company=vacancy["company"]["name"],
             salary_from=vacancy["salary_min"] if vacancy["salary_min"] else None,
             salary_to=vacancy["salary_max"] if vacancy["salary_max"] else None,
@@ -29,3 +33,9 @@ def parse_vacancies(objects: list[dict]) -> list[Vacancy]:
     return items
 
 
+def get_city(vacancy_json: str) -> str:
+    city = re.findall("г. .*? ", vacancy_json["addresses"]["address"][0]["location"])
+    if city:
+        return re.sub("г. |", "", city[0]).strip()
+    else:
+        return ""

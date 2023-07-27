@@ -3,6 +3,7 @@ from pydantic import BaseModel
 class Vacancy(BaseModel):
     id: str
     name: str
+    city: str
     platform: str
     company: str
     url: str
