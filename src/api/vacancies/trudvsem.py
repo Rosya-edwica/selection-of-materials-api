@@ -13,6 +13,7 @@ async def find_vacancies_by_profession(name: str, count: int) -> list[Vacancy]:
     items = parse_vacancies(data["results"]["vacancies"])
     return items[:count]
 
+
 def parse_vacancies(objects: list[dict]) -> list[Vacancy]:
     items: list[Vacancy] = []
     for item in objects:

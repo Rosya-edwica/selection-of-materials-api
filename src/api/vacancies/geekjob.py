@@ -26,7 +26,6 @@ async def find_vacancies_by_profession(name: str, count: int) -> list[Vacancy]:
 
 async def parse_vacancy(vacancy_id: str) -> Vacancy:
     try:
-
         soup = await get_soup(VACANCY_URL + vacancy_id)
         salary = parse_salary(soup)
         vacancy = Vacancy(
@@ -42,8 +41,8 @@ async def parse_vacancy(vacancy_id: str) -> Vacancy:
             skills=[]  # Навыки в описании вакансии
         )
         return vacancy
-    except:
-        pass  # Вакансия недоступна, т.к. находится в архиве
+    except BaseException as err:
+        print("Вакансия в архиве:", vacancy_id)  # Вакансия недоступна, т.к. находится в архиве
 
 
 def parse_salary(soup: BeautifulSoup) -> Salary:
@@ -67,6 +66,7 @@ def parse_salary(soup: BeautifulSoup) -> Salary:
             To=salary_ints[0],
             Currency=filter_currency(text[-1])
         )
+
 
 def get_city(soup: BeautifulSoup) -> str:
     city = soup.find("div", class_="location")

@@ -2,9 +2,10 @@ from models import PlayList, SkillPlaylists
 from api.youtube.config import  get_youtube_data_by_query
 from database import find_playlists_in_history, save_playlists_to_history
 
-async def get_list_of_playlist(db, queryList: list[str], count: int = 3) -> list[SkillPlaylists]:
+
+async def get_list_of_playlist(db, query_list: list[str], count: int = 3) -> list[SkillPlaylists]:
     result: list[SkillPlaylists] = []
-    for skill in queryList:
+    for skill in query_list:
         playlists_from_history = await find_playlists_in_history(db, skill, count)
         if playlists_from_history:
             result.append(playlists_from_history)
@@ -14,12 +15,14 @@ async def get_list_of_playlist(db, queryList: list[str], count: int = 3) -> list
     return result   
 
 
-async def get_skill_playlists(db, skill_name: str, count: int = 3) -> list[SkillPlaylists]:
+async def get_skill_playlists(db, skill_name: str, count: int = 3) -> SkillPlaylists:
     playlists: list[PlayList] = []
     json_data = await get_youtube_data_by_query(skill_name)
     
     for i in json_data["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"]:
-        if "itemSectionRenderer" not in i.keys(): continue
+        if "itemSectionRenderer" not in i.keys():
+            continue
+
         for j in i["itemSectionRenderer"]["contents"]:
             if "playlistRenderer" in j.keys():
                 video = PlayList(

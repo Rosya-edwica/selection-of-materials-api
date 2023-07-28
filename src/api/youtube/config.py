@@ -13,7 +13,8 @@ headers = {
     "accept-language": "ru,en;q=0.9",
 }
 
-async def get_html(query: str) -> str:
+
+async def get_html(query: str) -> bytes:
     params = {
         "search_query": query
     }
@@ -22,8 +23,9 @@ async def get_html(query: str) -> str:
             html = await resp.text()
             return html.encode("utf-8")
 
+
 async def get_youtube_data_by_query(query: str) -> dict:
-    query_filename =f"{randint(1_000_00, 5_000_00)}_timed_file.json"
+    query_filename = f"{randint(1_000_00, 5_000_00)}_timed_file.json"
     
     html = await get_html(query)
     scripts = re.findall("<script.*?</script>", html.decode("utf-8"))

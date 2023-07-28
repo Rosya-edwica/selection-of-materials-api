@@ -1,4 +1,3 @@
-
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from fastapi import FastAPI, Request, status
@@ -11,8 +10,9 @@ app = FastAPI(
 )
 app.include_router(router)
 
+
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
+async def validation_exception_handler(exc: RequestValidationError):
     errors = exc.errors()
     match errors[0]["type"]:
         case "value_error.any_str.min_length": message = "Слишком короткий запрос"

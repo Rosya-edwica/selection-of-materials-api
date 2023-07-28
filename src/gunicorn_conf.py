@@ -8,4 +8,4 @@ worker_class = 'uvicorn.workers.UvicornWorker'
 
 loglevel = 'debug'
 accesslog = '../access_log'
-errorlog =  '../error_log'
+errorlog = '../error_log'

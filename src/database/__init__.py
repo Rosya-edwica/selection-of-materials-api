@@ -1,4 +1,4 @@
 from database.config import connect
-from database.books import find_books_by_header, find_books_by_description, find_books_in_history, save_query_in_history
+from database.books import find_books_by_header, find_books_in_history, save_query_in_history
 from database.videos import find_videos_in_history, save_videos_to_history
 from database.playlists import find_playlists_in_history, save_playlists_to_history
