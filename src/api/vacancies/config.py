@@ -33,7 +33,7 @@ async def get_soup(url: str, headers: dict = None) -> BeautifulSoup:
 async def update_access_token(old_token: str) -> str:
     params = {
         "refresh_token": old_token.replace("Bearer ", ""),
-        "client_id": "2093",
+        "client_id": "2915",
         "client_secret": os.getenv("SUPERJOB_SECRET")
     }
     data = await get_json(url="https://api.superjob.ru/2.0/oauth2/refresh_token", params=params, headers=HEADERS)
