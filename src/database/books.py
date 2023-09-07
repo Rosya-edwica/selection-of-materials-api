@@ -30,24 +30,27 @@ async def find_books(db, query: str, limit: int = 10, language: str = "all",
     if limit:
         selection_query += f" LIMIT {limit}"
     
-    result = [
-        Book(
-            name=book[0],
-            description=book[1],
-            language=book[2],
-            price=book[3],
-            old_price=book[4],
-            min_age=book[5],
-            rating=book[6],
-            year=book[7],
-            header_image=book[8],
-            link=book[9],
-            currency=book[10],
-            pages=book[11],
-            is_audio=book[12],
-            id=book[13]
-        ) 
-        for book in await db.fetch(selection_query)]
+    async with db.cursor() as cur:
+        await cur.execute(selection_query)
+        
+        result = [
+            Book(
+                name=book[0],
+                description=book[1],
+                language=book[2],
+                price=book[3],
+                old_price=book[4],
+                min_age=book[5],
+                rating=book[6],
+                year=book[7],
+                header_image=book[8],
+                link=book[9],
+                currency=book[10],
+                pages=book[11],
+                is_audio=book[12],
+                id=book[13]
+            ) 
+            for book in await cur.fetchall()]
     return result
 
 
@@ -62,25 +65,28 @@ async def find_books_in_history(db, text: str, free: bool = None) -> tuple[list[
         query += " AND final_price IS NULL"
     elif free is False:
         query += " AND final_price IS NOT NULL"
-    books = [
-        Book(
-            name=book[0],
-            description=book[1],
-            language=book[2],
-            price=book[3],
-            old_price=book[4],
-            min_age=book[5],
-            rating=book[6],
-            year=book[7],
-            header_image=book[8],
-            link=book[9],
-            currency=book[10],
-            pages=book[11],
-            is_audio=book[12],
-            id=book[13]
-        ) 
-        for book in await db.fetch(query)]
-    check_skill_exist = await db.fetch(f"SELECT id FROM skill_to_book WHERE LOWER(skill) = '{text.lower().strip()}'")
+
+    async with db.cursor() as cur:
+        await cur.execute(query)
+        books = [
+            Book(
+                name=book[0],
+                description=book[1],
+                language=book[2],
+                price=book[3],
+                old_price=book[4],
+                min_age=book[5],
+                rating=book[6],
+                year=book[7],
+                header_image=book[8],
+                link=book[9],
+                currency=book[10],
+                pages=book[11],
+                is_audio=book[12],
+                id=book[13]
+            ) 
+            for book in await cur.fetchall()]
+        check_skill_exist = await cur.fetchall(f"SELECT id FROM skill_to_book WHERE LOWER(skill) = '{text.lower().strip()}'")
     if check_skill_exist:
         return books, True
     else:
@@ -103,4 +109,5 @@ def create_search_vector_query(values: list[str]) -> str:
 
 
 async def save_undetected_skill(db, skill: str):
-    await db.execute(f"INSERT INTO skill_to_book(skill, book_id) VALUES('{skill}', NULL) ON CONFLICT DO NOTHING")
+    async with db.cursor() as cur:
+        await cur.execute(f"INSERT INTO skill_to_book(skill, book_id) VALUES('{skill}', NULL) ON CONFLICT DO NOTHING")

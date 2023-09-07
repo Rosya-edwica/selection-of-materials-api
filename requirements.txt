@@ -7,3 +7,4 @@ asyncio
 aiohttp
 python-dotenv
 asyncpg
+aiomysql
