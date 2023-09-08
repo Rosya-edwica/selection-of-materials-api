@@ -14,9 +14,8 @@ env = dotenv.load_dotenv(".env")
 if not env:
     exit("Ошибка! Не удалось найти файл .env!")
 
-conn = aiohttp.TCPConnector()
 async def get_json(url: str, headers: dict = None, params: dict = None) -> dict | list | None:
-    async with aiohttp.ClientSession(trust_env=True, connector=conn) as session:
+    async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers, params=params) as resp:
             if resp.status != 200: return []
             data = await resp.json()
@@ -24,8 +23,8 @@ async def get_json(url: str, headers: dict = None, params: dict = None) -> dict 
 
 
 async def get_soup(url: str, headers: dict = None) -> BeautifulSoup:
-    async with aiohttp.ClientSession(trust_env=True, connector=conn) as session:
-        async with session.get(url, headers=headers, ssl=False) as resp:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, headers=headers) as resp:
             soup = BeautifulSoup(await resp.read(), "lxml")
             return soup
 
