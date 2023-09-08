@@ -8,8 +8,8 @@ class Book(BaseModel):
     header_image: str | None
     link: str
     is_audio: bool
-    old_price: float | None
-    price: float | None
+    old_price: int | None
+    price: int | None
     currency: str | None
     min_age: int
     language: str

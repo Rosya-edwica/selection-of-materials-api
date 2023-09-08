@@ -15,18 +15,19 @@ async def find_books_by_header(db, query: str, count: int = 3, language: str = "
 async def find_books(db, query: str, limit: int = 10, language: str = "all",
                      ignore_list: list[int] = None, free: bool = None) -> list[Book]:
     selection_query = f"""
-    SELECT title, description, language, final_price, full_price, min_age, rating, year, image, 
-    url, currency, pages, is_audio, id 
-    FROM book WHERE """ + create_search_vector_query(query.split())
+        SELECT name, description, language, price, old_price, min_age, rating,
+        year, image, url, currency, pages, is_audio, id
+        FROM book 
+        WHERE MATCH (name, description) AGAINST ('{query}')"""
 
     if ignore_list:
         selection_query += f" AND id not in ({','.join(str(i) for i in ignore_list)})"
     if language != "all":
         selection_query += f" AND language = '{language}'"
     if free is True:
-        selection_query += " AND final_price IS NULL"
+        selection_query += " AND price IS NULL"
     elif free is False:
-        selection_query += " AND final_price IS NOT NULL"
+        selection_query += " AND price IS NOT NULL"
     if limit:
         selection_query += f" LIMIT {limit}"
     
@@ -56,15 +57,16 @@ async def find_books(db, query: str, limit: int = 10, language: str = "all",
 
 async def find_books_in_history(db, text: str, free: bool = None) -> tuple[list[Book], bool]:
     query = f"""
-        SELECT title, description, language, final_price, full_price, min_age, rating, year, image, url, 
-        currency, pages, is_audio, book.id
+        SELECT name, description, language, price, old_price, min_age, rating,
+        year, image, url, currency, pages, is_audio, book.id
         FROM book
-        INNER JOIN skill_to_book ON book.id = skill_to_book.book_id
-        WHERE LOWER(skill_to_book.skill) = '{text.lower().strip()}'"""
+        INNER JOIN query_to_book ON book.id = query_to_book.book_id
+        WHERE LOWER(query_to_book.query) = '{text.lower().strip()}'
+        """
     if free is True:
-        query += " AND final_price IS NULL"
+        query += " AND price IS NULL"
     elif free is False:
-        query += " AND final_price IS NOT NULL"
+        query += " AND price IS NOT NULL"
 
     async with db.cursor() as cur:
         await cur.execute(query)
@@ -86,28 +88,30 @@ async def find_books_in_history(db, text: str, free: bool = None) -> tuple[list[
                 id=book[13]
             ) 
             for book in await cur.fetchall()]
-        check_skill_exist = await cur.fetchall(f"SELECT id FROM skill_to_book WHERE LOWER(skill) = '{text.lower().strip()}'")
+        
+    check_skill_exist = await check_query_exists(db, text)
     if check_skill_exist:
         return books, True
     else:
         return [], False
 
 
+async def check_query_exists(db, query: str) -> bool:
+    async with db.cursor() as cur:
+        await cur.execute(f"SELECT id FROM query_to_book WHERE LOWER(query) = '{query.lower().strip()}'")
+        query_id =  await cur.fetchall()
+        if query_id:
+            return True
+    
+    return False
+
 async def save_query_in_history(db, query: str, book_ids: list[int]):
-    await db.executemany(f"INSERT INTO skill_to_book(skill, book_id) VALUES($1, $2) ON CONFLICT DO NOTHING",
+    async with db.cursor() as cur:
+        await cur.executemany(f"INSERT IGNORE INTO query_to_book(query, book_id) VALUES(%s, %s)",
                          [(query, book_id) for book_id in book_ids])
-
-
-def create_insert_query(values: list[str]) -> str:
-    query = ",".join((f"""('{i.replace("'", '`')}')""" for i in values))
-    return query
-
-
-def create_search_vector_query(values: list[str]) -> str:
-    query = " AND ".join((f"""tsv_en @@ to_tsquery('english', '{i.lower().replace("'", '`')}')""" for i in values))
-    return query
-
+        await db.commit()
 
 async def save_undetected_skill(db, skill: str):
     async with db.cursor() as cur:
-        await cur.execute(f"INSERT INTO skill_to_book(skill, book_id) VALUES('{skill}', NULL) ON CONFLICT DO NOTHING")
+        await cur.execute(f"INSERT IGNORE INTO query_to_book(query, book_id) VALUES('{skill}', NULL)")
+        await db.commit()

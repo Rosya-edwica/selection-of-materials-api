@@ -40,7 +40,6 @@ async def search_list_of_books(text: list[str] = QueryTextValidation, count: int
                                lang: str = QueryLanguageValidation, free: bool = QueryBoolValidation) -> list[SkillBooks]:
     db = await database.connect(loop)
     books = await litres.get_list_of_books(db, text, count, language=lang, free=free)
-    await db.close()
     return books
 
 

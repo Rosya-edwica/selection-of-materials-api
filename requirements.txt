@@ -8,3 +8,4 @@ aiohttp
 python-dotenv
 asyncpg
 aiomysql
+beautifulsoup4
