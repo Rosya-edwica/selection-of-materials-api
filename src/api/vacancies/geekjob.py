@@ -1,4 +1,5 @@
 import re
+import logging
 
 import asyncio
 from bs4 import BeautifulSoup
@@ -42,7 +43,7 @@ async def parse_vacancy(vacancy_id: str) -> Vacancy:
         )
         return vacancy
     except BaseException as err:
-        print("Вакансия в архиве:", vacancy_id)  # Вакансия недоступна, т.к. находится в архиве
+        logging.info(f"Вакансия в архиве:{vacancy_id}")  # Вакансия недоступна, т.к. находится в архиве
 
 def parse_salary(soup: BeautifulSoup) -> Salary:
     text = soup.find("span", class_="salary").text

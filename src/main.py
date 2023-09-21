@@ -3,7 +3,17 @@ from fastapi.responses import JSONResponse
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from api.routes.controller import router
+import logging
 
+logging.basicConfig(filename="process.log",
+                    filemode='a',
+                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.DEBUG)
+
+logging.info("Running Urban Planning")
+
+logger = logging.getLogger('urbanGUI')
 
 app = FastAPI(
     version="1.1",
