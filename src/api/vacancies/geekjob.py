@@ -20,7 +20,7 @@ async def find_vacancies_by_profession(name: str, count: int) -> list[Vacancy]:
         return []
     vacancy_ids = [item["id"] for item in data["data"] if not item["log"]["archived"]][:count]
     tasks = [asyncio.create_task(parse_vacancy(vacancy_id)) for vacancy_id in vacancy_ids]
-    vacancies = await asyncio.gather(*tasks)
+    vacancies = [item for item in await asyncio.gather(*tasks) if item is not None]
     return vacancies
 
 
@@ -43,7 +43,6 @@ async def parse_vacancy(vacancy_id: str) -> Vacancy:
         return vacancy
     except BaseException as err:
         print("Вакансия в архиве:", vacancy_id)  # Вакансия недоступна, т.к. находится в архиве
-
 
 def parse_salary(soup: BeautifulSoup) -> Salary:
     text = soup.find("span", class_="salary").text

@@ -27,7 +27,7 @@ def parse_vacancies(objects: list[dict]) -> list[Vacancy]:
         items.append(Vacancy(
             platform="superjob",
             company=item["firm_name"],
-            id=item["id"],
+            id=str(item["id"]),
             city=item["town"]["title"],
             url=item["link"],
             name=item["profession"],
