@@ -1,5 +1,5 @@
 from models import SkillVideos, Video
-
+from database.config import connect
 
 async def save_videos_to_history(db, skill: str, videos: list[Video]):
     async with db.cursor() as cur:
@@ -17,25 +17,37 @@ async def set_connect_between_videos_and_skill(db, skill: str, video_ids: list[s
             [(skill, video_id) for video_id in video_ids])
         await db.commit()
 
-async def find_videos_in_history(db, skill: str, limit: int) -> SkillVideos | None:
+async def find_videos_in_history(loop, skill: str, limit: int) -> SkillVideos | None:
     query = f"""SELECT video.id, video.name, video.url, video.img 
         FROM video
         INNER JOIN query_to_video ON video.id = query_to_video.video_id
         WHERE LOWER(query_to_video.query) = '{skill.lower().strip()}'
         LIMIT {limit}; """
     
-    async with db.cursor() as cur:
-        await cur.execute(query)
-        
-        videos = [
+    conn = await connect(loop)
+    cursor = await conn.cursor()
+    await cursor.execute(query)
+    videos = [
             Video(
                 id=video[0],
                 name=video[1],
                 link=video[2],
                 header_image=video[3],
             )
-            for video in await cur.fetchall()
-        ]
+            for video in await cursor.fetchall()
+    ]
+    # async with db.cursor() as cur:
+    #     await cur.execute(query)
+        
+    #     videos = [
+    #         Video(
+    #             id=video[0],
+    #             name=video[1],
+    #             link=video[2],
+    #             header_image=video[3],
+    #         )
+    #         for video in await cur.fetchall()
+    #     ]
     if videos:
         return SkillVideos(
             skill=skill,
