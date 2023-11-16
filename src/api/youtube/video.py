@@ -20,13 +20,14 @@ async def get_videos_from_history(db, query_list: set[str], count: int = 3) -> l
     return videos
 
 async def get_videos_from_youtube(db, query_list: str, count: int = 3) -> list[SkillVideos]:
-    tasks = [asyncio.create_task(get_skill_videos(db, skill, count)) 
+    loop = asyncio.get_event_loop()
+    tasks = [asyncio.create_task(get_skill_videos(loop, skill, count)) 
         for skill in query_list]
     videos = [i for i in await asyncio.gather(*tasks) if i is not None]
     return videos
 
 
-async def get_skill_videos(db, skill_name: str, count: int = 3) -> SkillVideos:
+async def get_skill_videos(loop, skill_name: str, count: int = 3) -> SkillVideos:
     videos: list[Video] = []
     json_data = await get_youtube_data_by_query(query=skill_name)
     for item in json_data["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"]["sectionListRenderer"]["contents"]:
@@ -43,7 +44,7 @@ async def get_skill_videos(db, skill_name: str, count: int = 3) -> SkillVideos:
                 header_image=video_data["videoRenderer"]["thumbnail"]["thumbnails"][-1]["url"]
             )
             videos.append(video)
-    await save_videos_to_history(db, skill_name, videos)
+    await save_videos_to_history(loop, skill_name, videos)
     return SkillVideos(
         skill=skill_name,
         materials=videos[:count]

@@ -1,17 +1,19 @@
 from models import SkillVideos, Video
 from database.config import connect
 
-async def save_videos_to_history(db, skill: str, videos: list[Video]):
+async def save_videos_to_history(loop, skill: str, videos: list[Video]):
+    db = await connect(loop)
     async with db.cursor() as cur:
         
         await cur.executemany(f"INSERT IGNORE INTO video(id, name, url, img) VALUES (%s, %s, %s, %s)",
             [(video.id, video.name.replace("'", "`").replace('"', '`'), video.link, video.header_image)
                 for video in videos])
         await db.commit()
-    await set_connect_between_videos_and_skill(db, skill, video_ids=[video.id for video in videos])
+    await set_connect_between_videos_and_skill(loop, skill, video_ids=[video.id for video in videos])
 
 
-async def set_connect_between_videos_and_skill(db, skill: str, video_ids: list[str]):
+async def set_connect_between_videos_and_skill(loop, skill: str, video_ids: list[str]):
+    db = await connect(loop)
     async with db.cursor() as cur:
         await cur.executemany(f"INSERT IGNORE INTO query_to_video(query, video_id) VALUES(%s, %s);",
             [(skill, video_id) for video_id in video_ids])
